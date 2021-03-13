@@ -13,39 +13,35 @@ public class RedirectServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //validation of req
+        //parsing URL
         String URL = req.getRequestURI();
         String key = "/api/Redirect/";
         String hostedURL = URL.substring(URL.lastIndexOf(key) + key.length());
 
-        if(!hostedURL.matches("[A-Za-z0-9]*")){
-            PrintWriter out = resp.getWriter();
-            resp.setContentType("application/json");
-            resp.setCharacterEncoding("UTF-8");
-            out.print(buildResponse("false", ""));
-            out.flush();
-            return;
+        //validation of URL
+        if(!hostedURL.matches("[A-Za-z0-9]*") || hostedURL.length()>40){
+            sendResponse(resp,"");
         }
-
         //DB accessing -- change to hashmap backed to database?
         String redirectURL = DBAccess.getURL(hostedURL);
 
-        //check redirectURL is not error
-        Boolean errorFound = false;
-        if (errorFound) redirectURL = "";
-
         //send response
+        sendResponse(resp, redirectURL);
+    }
+
+    //update response object
+    private void sendResponse(HttpServletResponse resp, String redirectURL) throws IOException {
         PrintWriter out = resp.getWriter();
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
-        out.print(buildResponse(errorFound.toString(), redirectURL));
+        out.print(buildResponse(redirectURL));
         out.flush();
     }
 
-    private String buildResponse(String valid, String link){
+    //build json of response
+    private String buildResponse(String link){
 
         String json = "{\n";
-        json += "\"valid\": \"" + valid + "\",\n";
         json += "\"link\": \"" + link + "\"\n";
         json += "}";
         return json;

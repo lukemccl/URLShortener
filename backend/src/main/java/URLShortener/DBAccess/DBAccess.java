@@ -13,11 +13,6 @@ public class DBAccess {
         try {
             // DriverManager: The basic service for managing a set of JDBC drivers.
             DBConnect = DriverManager.getConnection("jdbc:mysql://localhost:3306/urls", "root", "URLShortener");
-            if (DBConnect != null) {
-                System.out.println("Connection Successful");
-            } else {
-                System.out.println("Failed to make connection!");
-            }
         } catch (SQLException e) {
             System.out.println("MySQL Connection Failed!");
             e.printStackTrace();
@@ -26,14 +21,14 @@ public class DBAccess {
         return DBConnect;
     }
 
-    public static String getURL(String hostedURL){
+    public static String getURL(String hostURL){
         //access database and retrieve redirectURL
         String URL = "";
         try {
             Connection connection = makeConnection();
 
             // MySQL Select Query Tutorial
-            String getQueryStatement = "SELECT redirectURL from GlobalURLS WHERE hostedURL = '"+hostedURL+"';";
+            String getQueryStatement = "SELECT redirectURL FROM globalurls WHERE hostedURL = '"+ hostURL+"';";
 
             PreparedStatement prepareStat = connection.prepareStatement(getQueryStatement);
 
@@ -42,11 +37,11 @@ public class DBAccess {
 
             // Let's iterate through the java ResultSet
             while (rs.next()) {
-                URL = rs.getString("externalLink");
+                URL = rs.getString("redirectURL");
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            return "";
         }
         return URL;
     }
@@ -56,7 +51,7 @@ public class DBAccess {
         try {
             Connection connection = makeConnection();
 
-            String insertQueryStatement = "INSERT  INTO  GlobalURLS  VALUES  (?,?)";
+            String insertQueryStatement = "INSERT  INTO  globalurls  VALUES  (?,?)";
 
             PreparedStatement prepareStat = connection.prepareStatement(insertQueryStatement);
             prepareStat.setString(1, hostedURL);
