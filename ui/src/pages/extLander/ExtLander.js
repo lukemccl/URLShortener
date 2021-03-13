@@ -7,7 +7,7 @@ class ExtLander extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          URLValid: true,
+          Response: false,
           URLDirect: ''
         };
     }
@@ -23,14 +23,14 @@ class ExtLander extends Component {
             .then(response => response.json())
             .then(result => {
               this.setState({
-                URLValid: result.valid, 
+                Response: true, 
                 URLDirect: result.link})
             })
     }
 
     render() {
       const pageLink = this.state.URLDirect;
-      const validURl = this.state.URLValid;
+      const validURl = this.state.Response;
       let redirect
       if(pageLink) {
         redirect = <Link to={{ pathname: {redirect} }} />;

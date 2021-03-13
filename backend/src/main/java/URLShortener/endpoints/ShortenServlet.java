@@ -1,6 +1,7 @@
 package URLShortener.endpoints;
 
 import URLShortener.DBAccess.DBAccess;
+import com.google.gson.Gson;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -9,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class ShortenServlet extends HttpServlet {
     private final String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -21,30 +21,21 @@ public class ShortenServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        URLPair urlPair = new Gson().fromJson(req.getReader(), URLPair.class);
+
         //TODO: validate inputs
-        String body = req.getReader().lines().collect(Collectors.joining());
-
-        System.out.println(body);
-
-        //TODO: get inputs to java
-        String redirectURL = "";
-        String prefURL = "";
 
         //set host URL
         String hostedURL = "";
-        if(prefURL != null){
+        if(urlPair.prefURL.length() > 0){
             //Check prefURL not already used
-            if(DBAccess.checkConflicts(prefURL)){
+            if(DBAccess.checkConflicts(urlPair.prefURL)){
                 //respond that URL is taken
-                PrintWriter out = resp.getWriter();
-                resp.setContentType("application/json");
-                resp.setCharacterEncoding("UTF-8");
-                out.print(buildResponse("false", ""));
-                out.flush();
+                sendResponse(resp, "false", "");
                 return;
             }
-
-            hostedURL = prefURL;
+            hostedURL = urlPair.prefURL;
         }else{
             String randURL = generateURL();
 
@@ -56,12 +47,18 @@ public class ShortenServlet extends HttpServlet {
         }
 
         //DB set
-        String success = DBAccess.setNewURL(hostedURL, redirectURL);
+        String success = DBAccess.setNewURL(hostedURL, urlPair.redirectURL);
+
         if (!Boolean.getBoolean(success)){
             hostedURL = "";
         }
 
         //send response
+        sendResponse(resp, success, hostedURL);
+    }
+
+    //update response object
+    private void sendResponse(HttpServletResponse resp, String success, String hostedURL) throws IOException {
         PrintWriter out = resp.getWriter();
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
@@ -69,6 +66,7 @@ public class ShortenServlet extends HttpServlet {
         out.flush();
     }
 
+    //build json of response
     private String buildResponse(String success, String hostedURL){
         String json = "{\n";
         json += "\"success\": \"" + success + "\",\n";
@@ -78,6 +76,7 @@ public class ShortenServlet extends HttpServlet {
         return json;
     }
 
+    //generate random URL if no preferred given
     private String generateURL(){
         int URLLength = 5;
 
@@ -87,5 +86,17 @@ public class ShortenServlet extends HttpServlet {
         }
 
         return URL.toString();
+    }
+
+    //redirect, preferred URL pair
+    private class URLPair{
+
+        public String redirectURL;
+        public String prefURL;
+
+        URLPair(String redirectURL, String prefURL){
+            this.redirectURL = redirectURL;
+            this.prefURL = prefURL;
+        }
     }
 }

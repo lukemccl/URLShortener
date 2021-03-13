@@ -39,12 +39,18 @@ class URLForm extends Component {
             }); 
             return
         } 
-        console.log("passed validation")
+        if(this.state.URLPref.length > 40) {
+            this.setState({
+                submitError: 'Preferred URL must not be over 40 characters'
+            }); 
+            return
+        }
+
         const requestOptions = {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ URLShort: this.state.URLShort,
-                                   URLPref: this.state.URLPref})
+            body: JSON.stringify({ redirectURL: this.state.URLShort,
+                                   prefURL: this.state.URLPref})
         };
         fetch('http://localhost:8080/api/Shorten/', requestOptions)
             .then(response => response.json())
