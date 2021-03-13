@@ -5,6 +5,7 @@ class URLForm extends Component {
         super(props);
         this.state = {
             submissionSuccess: null,
+            submitError: '',
             submittedURL: '',
             URLShort: '',
             URLPref: ''};
@@ -24,21 +25,41 @@ class URLForm extends Component {
         this.setState({URLPref: event.target.value});
     }
 
+    // Send inputs to API
     handleSubmit(event) {
-        // Send inputs to API
-        const newState = this.state; 
-
-        if(this.state.URLShort == '') return //block empty URLs -- need to change to show error somehow
-
-        newState.submissionSuccess = true;
-        newState.submittedURL = newState.URLPref;
-        this.setState(newState);
+        if(this.state.URLShort === '') {
+            this.setState({
+                submitError: 'Must have URL to shorten'
+            }); 
+            return
+        } 
+        if(this.state.URLPref !== '' && !this.state.URLPref.match("[A-Za-z0-9]")) {
+            this.setState({
+                submitError: 'Preferred URL must not contain symbols or spaces'
+            }); 
+            return
+        } 
+        console.log("passed validation")
+        const requestOptions = {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ URLShort: this.state.URLShort,
+                                   URLPref: this.state.URLPref})
+        };
+        fetch('http://localhost:8080/api/Shorten/', requestOptions)
+            .then(response => response.json())
+            .then(result => {
+                this.setState({
+                  submissionSuccess: result.success, 
+                  submittedURL: result.hostedURL})
+              })
     }
 
     handleReset(event) {
         // Reset state for new shorten
         this.setState({
             submissionSuccess: null,
+            submitError: '',
             submittedURL: '',
             URLShort: '',
             URLPref: ''});
@@ -47,10 +68,18 @@ class URLForm extends Component {
     render(){
         const submissionSuccess = this.state.submissionSuccess;
         const submittedURL = this.state.submittedURL ? this.state.submittedURL : 'random String';
+        const submissionerror = this.state.submitError
         let submitBox;
         if(!submissionSuccess){
-            submitBox = 
-            <form onSubmit={this.handleSubmit}>
+            submitBox = submissionerror ?
+                <div>
+                    {submissionerror}
+                    <button onClick={this.handleReset}>
+                    Shorten another URL!
+                    </button>
+                </div>
+                :
+                <form onSubmit={this.handleSubmit}>
                 <div>
                     <label>
                         URL to Shorten:
@@ -64,7 +93,7 @@ class URLForm extends Component {
                     </label>
                 </div>
                 <input type="submit" value="Submit" />
-            </form>
+                </form>
         }else{
             submitBox = 
             <div>
