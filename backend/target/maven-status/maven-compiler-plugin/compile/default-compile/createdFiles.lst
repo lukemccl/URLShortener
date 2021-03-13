@@ -1,0 +1,3 @@
+URLShortener\endpoints\ShortenServlet.class
+URLShortener\DBAccess\DBAccess.class
+URLShortener\endpoints\RedirectServlet.class
