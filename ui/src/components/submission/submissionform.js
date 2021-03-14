@@ -27,6 +27,7 @@ class URLForm extends Component {
         this.setState({URLPref: event.target.value});
     }
 
+    //validation conditions for input
     passesValidation() {
         if(!this.state.URLShort) {
             this.setState({
@@ -34,7 +35,7 @@ class URLForm extends Component {
             }); 
             return false
         } 
-        if(this.state.URLPref !== '' && !this.state.URLPref.match("[A-Za-z0-9]*")) {
+        if(this.state.URLPref !== '' && !this.state.URLPref.match("[A-Za-z0-9]+$")) {
             this.setState({
                 clientError: 'Preferred URL must not contain symbols or spaces'
             }); 
@@ -63,7 +64,6 @@ class URLForm extends Component {
 
     // Send inputs to API
     handleSubmit(event) {
-        //clientside validation
         if (!this.passesValidation()) {return}
 
         //send request
@@ -116,7 +116,7 @@ class URLForm extends Component {
                 </div>
                 :
                 <div>
-                    This tool will create a short URL {location}[Custom host] to redirect to the original URL.
+                    This tool will create a short URL {location}[Custom host] redirecting to the original URL.
                     <br/>
                     <br/>
                     <div>

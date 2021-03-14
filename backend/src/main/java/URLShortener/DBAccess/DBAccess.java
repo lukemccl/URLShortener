@@ -7,8 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DBAccess {
-    //Use of prepared statements removes risk of SQL injection
+    //Static DB Access class to connect API servlets to MySQL DB
 
+    //Use of PreparedStatement prevents SQL injection
     private static Connection makeConnection(){
         try {
             // Set connection

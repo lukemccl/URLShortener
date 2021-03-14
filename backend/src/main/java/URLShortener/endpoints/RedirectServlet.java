@@ -1,6 +1,5 @@
 package URLShortener.endpoints;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,21 +11,24 @@ import URLShortener.DBAccess.DBAccess;
 public class RedirectServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         //parsing URL
         String URL = req.getRequestURI();
         String key = "/api/Redirect/";
         String hostedURL = URL.substring(URL.lastIndexOf(key) + key.length());
 
         System.out.println("REDIREC request received  @ " +hostedURL);
-        //validation of URL
-        if(!hostedURL.matches("[A-Za-z0-9]*") || hostedURL.length()>40){
+
+        //validation of URL (matches client-side input validation)
+        if(!hostedURL.matches("[A-Za-z0-9]+$") || hostedURL.length()>40){
             sendResponse(resp,"");
+            return;
         }
-        //DB accessing -- change to hashmap backed to database?
+        //DB accessing -- change to hashmap backed to database for faster recent requests?
         String redirectURL = DBAccess.getURL(hostedURL);
 
         System.out.println("REDIREC request fulfilled @ " +redirectURL);
+
         //send response
         sendResponse(resp, redirectURL);
     }
