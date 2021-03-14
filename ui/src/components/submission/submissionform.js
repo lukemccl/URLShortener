@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 
 class URLForm extends Component {
     constructor(props) {
@@ -7,7 +6,7 @@ class URLForm extends Component {
         this.state = {
             response: false,
             clientError: '',
-            submittedURL: '',
+            submittedURL: null,
             URLShort: '',
             URLPref: '',
             promiseError: false};
@@ -30,7 +29,7 @@ class URLForm extends Component {
     // Send inputs to API
     handleSubmit(event) {
         //clientside validation
-        if(this.state.URLShort === '') {
+        if(!this.state.URLShort) {
             this.setState({
                 clientError: 'Must have URL to shorten'
             }); 
@@ -48,9 +47,13 @@ class URLForm extends Component {
             }); 
             return
         }
-        this.setState({
-            response: 'pending'
-        })
+        if(this.state.URLShort.length > 150) {
+            this.setState({
+                clientError: 'Original URL must not be over 150 characters'
+            }); 
+            return
+        }
+
         //send request
         const requestOptions = {
             method: 'PUT',
@@ -76,13 +79,14 @@ class URLForm extends Component {
         this.setState({
             response: false,
             clientError: '',
-            submittedURL: '',
+            submittedURL: null,
             URLShort: '',
             URLPref: '',
             promiseError: false});
     }
 
     render(){
+        const location = window.location.href
         const promiseError = this.state.promiseError //if promise failed
         const response = this.state.response; //true or false 
         const submittedURL = this.state.submittedURL //Contains host URL
@@ -98,33 +102,25 @@ class URLForm extends Component {
                 </div>
                 :
                 <div>
+                    This tool will create a short URL {location}[Custom host] to redirect to the original URL.
+                    <br/>
+                    <br/>
+                    Please include 'http(s)://' before any web address.
                     <div>
                         <label>
-                            URL to Shorten:
+                            Original URL:
                             <input type="text" value={this.state.URLShort} onChange={this.handleURLChange} />
                         </label>
                     </div>
                     <div>
                         <label>
-                            (Optional) Preferred host URL:
+                            (Optional) Preferred host:
                             <input type="text" value={this.state.URLPref} onChange={this.handlePrefChange} />
                         </label>
                     </div>
                     <button onClick={this.handleSubmit}>Submit</button>
                 </div>
         }else{
-            if(response==='pending'){
-                //show loading
-                submitBox =
-                <div>
-                    <header className="App-header">
-                        <img src={logo} className="App-logo" alt="logo" />
-                            <p>
-                                Making link...
-                            </p>
-                    </header>
-                </div>
-            }
             if(promiseError){
                 submitBox = 
                     <div>
@@ -142,8 +138,10 @@ class URLForm extends Component {
                         </button>
                     </div>
                 :
-                    <div>  
-                        URL successfully shortened to <a href={submittedURL}>{submittedURL}</a>
+                    <div> 
+                        <div>
+                            URL successfully shortened to <a href={submittedURL}>{location}{submittedURL}</a>
+                        </div> 
                         <button onClick={this.handleReset}>
                             Shorten another URL!
                         </button>
