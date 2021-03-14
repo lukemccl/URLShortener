@@ -16,7 +16,7 @@ class ExtLander extends Component {
       this.getURL();
     }
 
-    //separate handlers to keep track of both boxes
+    //retrieve redirect from API
     getURL = () => {
       let URLKey = (window.location.href.split('/')[3])
       fetch("http://localhost:8080/api/Redirect/" + URLKey)
