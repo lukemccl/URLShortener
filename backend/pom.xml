@@ -29,6 +29,14 @@
             <version>9.4.38.v20210224</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-servlets -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlets</artifactId>
+            <version>9.4.38.v20210224</version>
+        </dependency>
+
+
         <!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-maven-plugin -->
         <dependency>
             <groupId>org.eclipse.jetty</groupId>

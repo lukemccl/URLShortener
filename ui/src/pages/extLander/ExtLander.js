@@ -7,7 +7,8 @@ class ExtLander extends Component {
         super(props);
         this.state = {
           Response: false,
-          URLDirect: ''
+          URLDirect: '',
+          promiseError: false
         };
     }
 
@@ -24,31 +25,44 @@ class ExtLander extends Component {
               this.setState({
                 Response: true, 
                 URLDirect: result.link})
+            }).catch(error => {
+              this.setState({
+                  promiseError: true
+              })
             })
     }
 
     render() {
+      const promiseError = this.state.promiseError
       const pageLink = this.state.URLDirect;
       const validURl = this.state.Response;
       let redirect
-      if(pageLink) {
+      if(promiseError){
+          redirect = 
+          <p>
+            Something went wrong!
+          </p>
+      }else if(pageLink) { 
+        //sets URL in browser if found
         window.location.href = pageLink
         redirect = 
           <p>
             Enjoy !!
           </p>
       }else{
-        redirect = validURl ?
+        redirect = validURl ? 
+          //if request fails
           <p>
             URL Not found !!
           </p>
-        :
-          <p>
+        :  //if still waiting
+          <p>  
             Fetching URL now...
           </p>
       }
 
       return (
+      //encapsulates spinning logo (Still react default)
       <div>
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />

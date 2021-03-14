@@ -34,7 +34,6 @@ public class RedirectServlet extends HttpServlet {
     //update response object
     private void sendResponse(HttpServletResponse resp, String redirectURL) throws IOException {
         PrintWriter out = resp.getWriter();
-        resp.addHeader("Access-Control-Allow-Origin", "*");
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
         out.print(buildResponse(redirectURL));
