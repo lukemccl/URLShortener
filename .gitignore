@@ -3,3 +3,5 @@
 #local dev and build
 /backend/.idea/*
 /backend/target/*
+*.jar
+*.iml
