@@ -3,7 +3,6 @@ package URLShortener.endpoints;
 import URLShortener.DBAccess.DBAccess;
 import com.google.gson.Gson;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,28 +11,28 @@ import java.io.PrintWriter;
 import java.util.Random;
 
 public class ShortenServlet extends HttpServlet {
-    //conditions for URL generation
-    private final int URLLength = 5; //916132832 available combinations
+    //conditions for URL generation -- could be changed to environment variables supplied from cmd line
+    private final int URLLength = 5; //916132832 available combinations with specified charset
 
     private final String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private final String lower = upper.toLowerCase();
     private final String nums = "0123456789";
 
-    private final String charset = upper + lower + nums;
+    private final String charset = upper + lower + nums; //charset for random URLS
     private final Random random = new Random();
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         //read from request
         URLPair urlPair = new Gson().fromJson(req.getReader(), URLPair.class);
 
-        //TODO: validate inputs
+        //Validation done client-side
         System.out.println("SHORTEN request received  @ pref: " + urlPair.prefURL + ", redirect: " +urlPair.redirectURL);
 
         //send to DB
         String hostedURL;
         if(urlPair.prefURL.length() > 0){
-            //Check prefURL not already used
+            //attempt prefURL set
             if(!DBAccess.setNewURL(urlPair.prefURL, urlPair.redirectURL)){
                 //respond that URL is taken
                 System.out.println("SHORTEN request FAILED    @ host: " + urlPair.prefURL + ", redirect: " +urlPair.redirectURL);
@@ -45,7 +44,7 @@ public class ShortenServlet extends HttpServlet {
         }else{
             String randURL = generateURL();
 
-            //retried random URLs until success
+            //retry random URLs until success
             while(!DBAccess.setNewURL(randURL, urlPair.redirectURL)){
                 randURL = generateURL();
             }
