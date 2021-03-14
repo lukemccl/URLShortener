@@ -35,7 +35,7 @@ class URLForm extends Component {
             }); 
             return false
         } 
-        if(this.state.URLPref !== '' && !this.state.URLPref.match("[A-Za-z0-9]+$")) {
+        if(this.state.URLPref !== '' && !this.state.URLPref.match("^[A-Za-z0-9]+$")) {
             this.setState({
                 clientError: 'Preferred URL must not contain symbols or spaces'
             }); 

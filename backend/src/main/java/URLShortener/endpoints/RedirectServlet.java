@@ -20,7 +20,9 @@ public class RedirectServlet extends HttpServlet {
         System.out.println("REDIREC request received  @ " +hostedURL);
 
         //validation of URL (matches client-side input validation)
-        if(!hostedURL.matches("[A-Za-z0-9]+$") || hostedURL.length()>40){
+        if(!hostedURL.matches("^[A-Za-z0-9]+$") || hostedURL.length()>40){
+            System.out.println("REDIREC request FAILED    @ " +hostedURL);
+
             sendResponse(resp,"");
             return;
         }
