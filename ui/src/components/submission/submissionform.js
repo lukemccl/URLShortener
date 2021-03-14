@@ -105,85 +105,71 @@ class URLForm extends Component {
         const submittedURL = this.state.submittedURL //Contains host URL
         const clientError = response && submittedURL === '' ? "This host URL is taken" : this.state.clientError //Contains client error if exists
         let submitBox;
-        if(!response){
-            if(promiseError){
-                submitBox = 
+        if(promiseError){  //if fetch promise fails 
+            submitBox = 
+                <div>
                     <div>
-                        <div>
-                            Something went wrong!
-                        </div>
-                        <button onClick={this.handleReset}>
-                            Try again
-                        </button>
+                        Something went wrong!
                     </div>
-            }else{
-                submitBox = clientError ? //if clientside validation fails input
+                    <button onClick={this.handleReset}>
+                        Try again
+                    </button>
+                </div>
+        }else if(!response){
+            submitBox = clientError ? //if clientside validation fails input
+                <div>
                     <div>
-                        <div>
-                            {clientError}
-                        </div>
-                        <button onClick={this.handleReset}>
-                        Shorten another URL!
-                        </button>
+                        {clientError}
                     </div>
-                    :
-                    <div>
-                        This tool will create a short URL {location}[Custom host] redirecting to the original URL.
-                        <br/>
-                        <br/>
-                        <table>
-                            <tr>
-                                <td>
-                                    <label>Original URL:</label>
-                                </td>
-                                <td>
-                                    <input className="textInput" type="text" value={this.state.URLShort} onChange={this.handleURLChange} />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label>(Optional) Preferred host:</label>
-                                </td>
-                                <td>
-                                    <input className="textInput" type="text" value={this.state.URLPref} onChange={this.handlePrefChange} />
-                                </td>
-                            </tr>
-                        </table>
-                    <   button onClick={this.handleSubmit}>Submit</button>
-                    </div>
-            }
+                    <button onClick={this.handleReset}>
+                    Shorten another URL!
+                    </button>
+                </div>
+            :
+                <div>
+                    This tool will create a short URL {location}[Custom host] redirecting to the original URL.
+                    <br/>
+                    <br/>
+                    <table>
+                        <tr>
+                            <td>
+                                <label>Original URL:</label>
+                            </td>
+                            <td>
+                                <input className="textInput" type="text" value={this.state.URLShort} onChange={this.handleURLChange} />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>(Optional) Preferred host:</label>
+                            </td>
+                            <td>
+                                <input className="textInput" type="text" value={this.state.URLPref} onChange={this.handlePrefChange} />
+                            </td>
+                        </tr>
+                    </table>
+                <button onClick={this.handleSubmit}>Submit</button>
+            </div>
         }else{
-            if(promiseError){
-                submitBox = 
+            submitBox = clientError ? //if serverside validation fails input
+                <div>
                     <div>
-                        <div>
-                            Something went wrong!
-                        </div>
-                        <button onClick={this.handleReset}>
-                            Try again
-                        </button>
+                        {clientError}
                     </div>
-            }else{
-                submitBox = clientError ? //if serverside validation fails input
+                    <button onClick={this.handleReset}>
+                        Shorten another URL!
+                    </button>
+                </div>
+            :
+                <div> 
                     <div>
-                        <div>
-                            {clientError}
-                        </div>
-                        <button onClick={this.handleReset}>
-                            Shorten another URL!
-                        </button>
-                    </div>
-                :
-                    <div> 
-                        <div>
-                            URL successfully shortened to <a href={submittedURL}>{location}{submittedURL}</a>
-                        </div> 
-                        <button onClick={this.handleReset}>
-                            Shorten another URL!
-                        </button>
-                    </div>
+                        URL successfully shortened to <a href={submittedURL}>{location}{submittedURL}</a>
+                    </div> 
+                    <button onClick={this.handleReset}>
+                        Shorten another URL!
+                    </button>
+                </div>
             }
-        }
 
         return(submitBox)
     }
