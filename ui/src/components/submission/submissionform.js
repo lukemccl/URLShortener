@@ -15,6 +15,7 @@ class URLForm extends Component {
         this.handlePrefChange = this.handlePrefChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleReset = this.handleReset.bind(this);
+        this.passesValidation = this.passesValidation.bind(this);
     }
 
     //separate handlers to keep track of both boxes
@@ -26,33 +27,44 @@ class URLForm extends Component {
         this.setState({URLPref: event.target.value});
     }
 
-    // Send inputs to API
-    handleSubmit(event) {
-        //clientside validation
+    passesValidation() {
         if(!this.state.URLShort) {
             this.setState({
                 clientError: 'Must have URL to shorten'
             }); 
-            return
+            return false
         } 
         if(this.state.URLPref !== '' && !this.state.URLPref.match("[A-Za-z0-9]*")) {
             this.setState({
                 clientError: 'Preferred URL must not contain symbols or spaces'
             }); 
-            return
+            return false
         } 
         if(this.state.URLPref.length > 40) {
             this.setState({
                 clientError: 'Preferred URL must not be over 40 characters'
             }); 
-            return
+            return false
         }
         if(this.state.URLShort.length > 150) {
             this.setState({
                 clientError: 'Original URL must not be over 150 characters'
             }); 
-            return
+            return false
         }
+        if(!this.state.URLShort.match("^https?:\/\/(\\w+.)+")){ //regex for valid URL
+            this.setState({
+                clientError: 'Please include \'http(s)://\' before any web address.'
+            }); 
+            return false
+        }
+        return true
+    }
+
+    // Send inputs to API
+    handleSubmit(event) {
+        //clientside validation
+        if (!this.passesValidation()) {return}
 
         //send request
         const requestOptions = {
@@ -95,7 +107,9 @@ class URLForm extends Component {
         if(!response){
             submitBox = clientError ? //if clientside validation fails input
                 <div>
-                    {clientError}
+                    <div>
+                        {clientError}
+                    </div>
                     <button onClick={this.handleReset}>
                     Shorten another URL!
                     </button>
@@ -105,7 +119,6 @@ class URLForm extends Component {
                     This tool will create a short URL {location}[Custom host] to redirect to the original URL.
                     <br/>
                     <br/>
-                    Please include 'http(s)://' before any web address.
                     <div>
                         <label>
                             Original URL:
@@ -124,7 +137,9 @@ class URLForm extends Component {
             if(promiseError){
                 submitBox = 
                     <div>
-                        Something went wrong!
+                        <div>
+                            Something went wrong!
+                        </div>
                         <button onClick={this.handleReset}>
                             Try again
                         </button>
@@ -132,7 +147,9 @@ class URLForm extends Component {
             }else{
                 submitBox = clientError ? //if serverside validation fails input
                     <div>
-                        {clientError}
+                        <div>
+                            {clientError}
+                        </div>
                         <button onClick={this.handleReset}>
                             Shorten another URL!
                         </button>
