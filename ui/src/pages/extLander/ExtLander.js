@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from "react-router-dom"
 import logo from './logo.svg';
 import './extLander.css';
 
@@ -33,29 +32,30 @@ class ExtLander extends Component {
       const validURl = this.state.Response;
       let redirect
       if(pageLink) {
-        redirect = <Link to={{ pathname: {redirect} }} />;
+        window.location.href = pageLink
+        redirect = 
+          <p>
+            Enjoy !!
+          </p>
       }else{
         redirect = validURl ?
-          <div className="App">
-            <header className="App-header">
-              <img src={logo} className="App-logo" alt="logo" />
-                <p>
-                  Fetching URL now...
-                </p>
-              </header>
-          </div>
+          <p>
+            URL Not found !!
+          </p>
         :
-          <div>
-            <header className="App-header">
-              <img src={logo} className="App-logo" alt="logo" />
-                <p>
-                  URL Not found !!
-                </p>
-              </header>
-          </div>
+          <p>
+            Fetching URL now...
+          </p>
       }
 
-      return (redirect);
+      return (
+      <div>
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+            {redirect}
+          </header>
+      </div>
+      );
     }
 }
 
