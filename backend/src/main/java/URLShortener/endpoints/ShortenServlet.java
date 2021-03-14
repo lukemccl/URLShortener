@@ -38,7 +38,7 @@ public class ShortenServlet extends HttpServlet {
                 //respond that URL is taken
                 System.out.println("SHORTEN request FAILED    @ host: " + urlPair.prefURL + ", redirect: " +urlPair.redirectURL);
 
-                sendResponse(resp, "false", "");
+                sendResponse(resp, "");
                 return;
             }
             hostedURL = urlPair.prefURL;
@@ -55,23 +55,22 @@ public class ShortenServlet extends HttpServlet {
         System.out.println("SHORTEN request fulfilled @ host: " + hostedURL + ", redirect: " +urlPair.redirectURL);
 
         //send response
-        sendResponse(resp, "true", hostedURL);
+        sendResponse(resp, hostedURL);
     }
 
     //update response object
-    private void sendResponse(HttpServletResponse resp, String success, String hostedURL) throws IOException {
+    private void sendResponse(HttpServletResponse resp, String hostedURL) throws IOException {
         PrintWriter out = resp.getWriter();
-        resp.addHeader("Access-Control-Allow-Origin", "*");
+        resp.addHeader("Access-Control-Allow-Headers","content-type");
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
-        out.print(buildResponse(success, hostedURL));
+        out.print(buildResponse(hostedURL));
         out.flush();
     }
 
     //build json of response
-    private String buildResponse(String success, String hostedURL){
+    private String buildResponse(String hostedURL){
         String json = "{\n";
-        json += "\"success\": \"" + success + "\",\n";
         json += "\"hostedURL\": \"" + hostedURL + "\"\n";
         json += "}";
 
