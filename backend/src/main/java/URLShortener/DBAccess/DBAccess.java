@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DBAccess {
+    //Use of prepared statements removes risk of SQL injection
 
     private static Connection makeConnection(){
         try {
@@ -26,9 +27,10 @@ public class DBAccess {
         try {
             Connection connection = makeConnection();
 
-            String getQueryStatement = "SELECT redirectURL FROM globalurls WHERE hostedURL = '"+ hostURL+"';";
+            String getQueryStatement = "SELECT redirectURL FROM globalurls WHERE hostedURL = (?);";
 
             PreparedStatement prepareStat = connection.prepareStatement(getQueryStatement);
+            prepareStat.setString(1, hostURL);
 
             ResultSet rs = prepareStat.executeQuery();
 
