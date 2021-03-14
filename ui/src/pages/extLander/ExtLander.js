@@ -37,7 +37,7 @@ class ExtLander extends Component {
       const pageLink = this.state.URLDirect;
       const validURl = this.state.Response;
       let redirect
-      if(promiseError){
+      if(promiseError){ //if fetch promise fails
           redirect = 
           <p>
             Something went wrong!
