@@ -18,6 +18,7 @@ public class RedirectServlet extends HttpServlet {
         String key = "/api/Redirect/";
         String hostedURL = URL.substring(URL.lastIndexOf(key) + key.length());
 
+        System.out.println("REDIREC request received  @ " +hostedURL);
         //validation of URL
         if(!hostedURL.matches("[A-Za-z0-9]*") || hostedURL.length()>40){
             sendResponse(resp,"");
@@ -25,6 +26,7 @@ public class RedirectServlet extends HttpServlet {
         //DB accessing -- change to hashmap backed to database?
         String redirectURL = DBAccess.getURL(hostedURL);
 
+        System.out.println("REDIREC request fulfilled @ " +redirectURL);
         //send response
         sendResponse(resp, redirectURL);
     }
@@ -32,6 +34,7 @@ public class RedirectServlet extends HttpServlet {
     //update response object
     private void sendResponse(HttpServletResponse resp, String redirectURL) throws IOException {
         PrintWriter out = resp.getWriter();
+        resp.addHeader("Access-Control-Allow-Origin", "*");
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
         out.print(buildResponse(redirectURL));

@@ -12,6 +12,9 @@ import java.io.PrintWriter;
 import java.util.Random;
 
 public class ShortenServlet extends HttpServlet {
+    //conditions for URL generation
+    private final int URLLength = 5; //916132832 available combinations
+
     private final String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private final String lower = upper.toLowerCase();
     private final String nums = "0123456789";
@@ -21,17 +24,20 @@ public class ShortenServlet extends HttpServlet {
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+        //read from request
         URLPair urlPair = new Gson().fromJson(req.getReader(), URLPair.class);
 
         //TODO: validate inputs
+        System.out.println("SHORTEN request received  @ pref: " + urlPair.prefURL + ", redirect: " +urlPair.redirectURL);
 
-        //set host URL
-        String hostedURL = "";
+        //send to DB
+        String hostedURL;
         if(urlPair.prefURL.length() > 0){
             //Check prefURL not already used
-            if(DBAccess.checkConflicts(urlPair.prefURL)){
+            if(!DBAccess.setNewURL(urlPair.prefURL, urlPair.redirectURL)){
                 //respond that URL is taken
+                System.out.println("SHORTEN request FAILED    @ host: " + urlPair.prefURL + ", redirect: " +urlPair.redirectURL);
+
                 sendResponse(resp, "false", "");
                 return;
             }
@@ -39,27 +45,23 @@ public class ShortenServlet extends HttpServlet {
         }else{
             String randURL = generateURL();
 
-            //check URL not already used
-            while(DBAccess.checkConflicts(randURL)){
+            //retried random URLs until success
+            while(!DBAccess.setNewURL(randURL, urlPair.redirectURL)){
                 randURL = generateURL();
             }
             hostedURL = randURL;
         }
 
-        //DB set
-        String success = DBAccess.setNewURL(hostedURL, urlPair.redirectURL);
-
-        if (!Boolean.getBoolean(success)){
-            hostedURL = "";
-        }
+        System.out.println("SHORTEN request fulfilled @ host: " + hostedURL + ", redirect: " +urlPair.redirectURL);
 
         //send response
-        sendResponse(resp, success, hostedURL);
+        sendResponse(resp, "true", hostedURL);
     }
 
     //update response object
     private void sendResponse(HttpServletResponse resp, String success, String hostedURL) throws IOException {
         PrintWriter out = resp.getWriter();
+        resp.addHeader("Access-Control-Allow-Origin", "*");
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
         out.print(buildResponse(success, hostedURL));
@@ -78,8 +80,6 @@ public class ShortenServlet extends HttpServlet {
 
     //generate random URL if no preferred given
     private String generateURL(){
-        int URLLength = 5;
-
         StringBuilder URL = new StringBuilder();
         for(int i = 0; i< URLLength; i++){
             URL.append(charset.charAt(random.nextInt(charset.length())));
