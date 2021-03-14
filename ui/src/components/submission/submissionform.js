@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import './submissionform.css';
 
 class URLForm extends Component {
     constructor(props) {
@@ -119,18 +120,24 @@ class URLForm extends Component {
                     This tool will create a short URL {location}[Custom host] redirecting to the original URL.
                     <br/>
                     <br/>
-                    <div>
-                        <label>
-                            Original URL:
-                            <input type="text" value={this.state.URLShort} onChange={this.handleURLChange} />
-                        </label>
-                    </div>
-                    <div>
-                        <label>
-                            (Optional) Preferred host:
-                            <input type="text" value={this.state.URLPref} onChange={this.handlePrefChange} />
-                        </label>
-                    </div>
+                    <table>
+                        <tr>
+                            <td>
+                                <label>Original URL:</label>
+                            </td>
+                            <td>
+                                <input className="textInput" type="text" value={this.state.URLShort} onChange={this.handleURLChange} />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>(Optional) Preferred host:</label>
+                            </td>
+                            <td>
+                                <input className="textInput" type="text" value={this.state.URLPref} onChange={this.handlePrefChange} />
+                            </td>
+                        </tr>
+                    </table>
                     <button onClick={this.handleSubmit}>Submit</button>
                 </div>
         }else{

@@ -26,7 +26,7 @@ public class RedirectServlet extends HttpServlet {
             sendResponse(resp,"");
             return;
         }
-        //DB accessing -- change to hashmap backed to database for faster recent requests?
+        //DB accessing -- possibly change to hashmap backed to database for faster recent requests?
         String redirectURL = DBAccess.getURL(hostedURL);
 
         System.out.println("REDIREC request fulfilled @ " +redirectURL);
