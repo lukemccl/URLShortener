@@ -13,7 +13,7 @@ Navigate to /backend
 
 run "mvn package" to build
 
-run "java -jar backend-1.0-SNAPSHOT-jar-with-dependencies.jar" to start server
+run "java -jar target/backend-1.0-SNAPSHOT-jar-with-dependencies.jar" to start server
 
 The backend server runs on localhost:8080
 
